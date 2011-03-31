@@ -19,7 +19,7 @@ from fabric.contrib import console, files, project # Ditto
 from fabric.network import denormalize, interpret_host_string, disconnect_all
 from fabric import state # For easily-mockable access to roles, env and etc
 from fabric.state import commands, connections, env_options
-from fabric.utils import abort, indent
+from fabric.utils import abort, indent, notify
 
 
 # One-time calculation of "all internal callables" to avoid doing this on every
@@ -549,9 +549,11 @@ def main():
             # If no hosts found, assume local-only and run once
             if not hosts:
                 commands[name](*args, **kwargs)
+            notify("Done: %s" % (command), output=True)
         # If we got here, no errors occurred, so print a final note.
         if state.output.status:
             print("\nDone.")
+            notify("Done", output=True)
     except SystemExit:
         # a number of internal functions might raise this one.
         raise

@@ -21,7 +21,7 @@ from fabric.io import output_loop, input_loop
 from fabric.network import needs_host
 from fabric.state import (env, connections, output, win32, default_channel,
     io_sleep)
-from fabric.utils import abort, indent, warn, puts
+from fabric.utils import abort, indent, warn, puts, notify
 from fabric.thread_handling import ThreadHandler
 from fabric.sftp import SFTP
 
@@ -184,7 +184,9 @@ def require(*keys, **kwargs):
     abort(msg)
 
 
-def prompt(text, key=None, default='', validate=None):
+
+
+def prompt(text, key=None, default='', validate=None, notify_=True):
     """
     Prompt user with ``text`` and return the input (like ``raw_input``).
 
@@ -246,6 +248,12 @@ def prompt(text, key=None, default='', validate=None):
     prompt_str = text.strip() + default_str
     # Loop until we pass validation
     value = None
+    if notify_:
+        try:
+            notify(prompt_str)
+        except:  # should really handle this better...
+            pass
+
     while value is None:
         # Get input
         value = raw_input(prompt_str) or default

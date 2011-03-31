@@ -10,7 +10,7 @@ import select
 import socket
 import sys
 
-from fabric.utils import abort
+from fabric.utils import abort, notify
 from fabric.auth import get_password, set_password
 
 try:
@@ -243,7 +243,7 @@ def connect(user, host, port):
                 host, e[1])
             )
 
-def prompt_for_password(prompt=None, no_colon=False, stream=None):
+def prompt_for_password(prompt=None, no_colon=False, stream=None, notify_=True):
     """
     Prompts for and returns a new password if required; otherwise, returns None.
 
@@ -266,6 +266,8 @@ def prompt_for_password(prompt=None, no_colon=False, stream=None):
     password_prompt = prompt if (prompt is not None) else default
     if not no_colon:
         password_prompt += ": "
+    if notify_:
+        notify(password_prompt)
     # Get new password value
     new_password = getpass.getpass(password_prompt, stream)
     # Otherwise, loop until user gives us a non-empty password (to prevent
@@ -334,7 +336,9 @@ def disconnect_all():
     # Explicitly disconnect from all servers
     for key in connections.keys():
         if output.status:
-            print "Disconnecting from %s..." % denormalize(key),
+            message =  "Disconnecting from %s..." % denormalize(key)
+            print message
+            notify(message, output=True)
         connections[key].close()
         del connections[key]
         if output.status:

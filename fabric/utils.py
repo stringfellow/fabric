@@ -5,6 +5,20 @@ or performing indenting on multiline output.
 
 import sys
 import textwrap
+try:
+    from pynotify import init, Notification
+    init("cli notify")
+except ImportError:
+    pass
+
+def notify(message="", output=False):
+    if output:
+        prefix = "Fabric says: "
+    else:
+        prefix = "Fabric requires input: "
+    n = Notification(prefix, message)
+    n.show()
+
 
 def abort(msg):
     """
